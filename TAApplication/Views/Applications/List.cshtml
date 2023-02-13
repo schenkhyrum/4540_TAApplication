@@ -1,0 +1,130 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 7-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This HTML page is designed for U of U faculty. It displays information regarding all TA applications in a DataTable.*@
+
+@model IEnumerable<TAApplication.Models.Application>
+
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+@{
+    ViewData["Description"] = "List of TA applications recieved";
+}
+
+@section Scripts{
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#applicantTable').DataTable();
+        });
+    </script>
+}
+
+    @section Styles{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+}
+
+<h1 id="pageTitle"> Applicants </h1>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col">
+            <!-- Applicants Table -->
+            <table id="applicantTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TAUser.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TAUser.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TAUser.Unid)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DegreePursuing)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Department)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.GPA)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AvailableHours)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AvailableWeekBefore)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SemestersCompleted)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TransferSchool)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ResumeFilename)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ModificationDate)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.ID">@Html.DisplayFor(modelItem => item.TAUser.Name)</a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TAUser.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TAUser.Unid)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DegreePursuing)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GPA)
+                            </td>
+                            <td>
+                                <a asp-controller="Availability" asp-action="Index" asp-route-id="@item.ID">@Html.DisplayFor(modelItem => item.AvailableHours)</a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AvailableWeekBefore)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SemestersCompleted)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TransferSchool)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ResumeFilename)
+                            </td>
+                            <td>
+                                @item.ModificationDate.ToLocalTime()
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

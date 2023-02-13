@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@inject SignInManager<TAUser> SignInManager
+@inject UserManager<TAUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (User.Identity != null && User.Identity.Name != null)
+        {
+            var user = (await UserManager.FindByEmailAsync(User.Identity.Name));
+            var unid = user.Unid;
+            var userRole = (await UserManager.GetRolesAsync(user)).First();
+
+            @*use the users unid and userRole in the navbar*@
+            <li class="nav-item">
+                <a class="nav-link navBarTextColor" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @userRole @unid!</a>
+            </li>
+        }
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link navBarTextColor">Logout</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link navBarTextColor" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link navBarTextColor" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>

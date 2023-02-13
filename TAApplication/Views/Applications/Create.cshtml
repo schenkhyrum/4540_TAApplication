@@ -1,0 +1,142 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 7-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains the site information for students applying to become a TA for the University of Utah. The site contains a form requesting
+    various identification and academic information about the student, as well as qualifications.*@
+
+@model TAApplication.Models.Application
+
+@{
+    ViewData["Title"] = "Create Application";
+}
+
+@{
+    ViewData["Description"] = "Create Prospective TA Application";
+}
+
+@section Scripts{
+    <!--found in bootstrap docs to make tooltips work-->
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<h1 id="pageTitle"> TA Application </h1>
+<div class="container-fluid">
+    <div class="row">
+        <!--Shows on top when screen below md-->
+        <div class="d-md-none px-0"><img class="img-fluid" src="~/images/apply.jpg" alt="TA Picture" /></div>
+        <div class="col-md-8 col-lg-6 px-0">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <!-- Department form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="Department"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="What major department are you in?"></i>
+                    </div>
+                    <input asp-for="Department" type="text" class="form-control" id="departmentInput" />
+                    <span asp-validation-for="Department" class="text-danger"></span>
+                </div>
+                <!-- Degree form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="DegreePursuing"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Select which degree you are currently pursuing"></i>
+                    </div>
+                    <select asp-for="DegreePursuing" asp-items="@Html.GetEnumSelectList<DegreePursuing>()"class="form-control"></select>
+                    <span asp-validation-for="DegreePursuing" class="text-danger"></span>
+                </div>
+                <!-- Semesters completed form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="SemestersCompleted"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the number of semesters you have completed"></i>
+                    </div>
+                    <input asp-for="SemestersCompleted" type="text" class="form-control" id="semesterInput" />
+                    <span asp-validation-for="SemestersCompleted" class="text-danger"></span>
+                </div>
+                <!-- Availability week before form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="AvailableWeekBefore"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Will you be available the week prior to the start of classes?"></i>
+                    </div>
+                    <select selected="false" class="form-control" id="availabilityInput" asp-for="AvailableWeekBefore">
+                        <option value="" selected disabled hidden></option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                    <span asp-validation-for="AvailableWeekBefore" class="text-danger"></span>
+                </div>
+                <!-- Available hours form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="AvailableHours"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="How many hours you can work per week?"></i>
+                    </div>
+                    <input asp-for="AvailableHours" type="text" class="form-control" id="hoursInput" />
+                    <span asp-validation-for="AvailableHours" class="text-danger"></span>
+                </div>
+                <!-- GPA form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="GPA"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter your current cumulative GPA"></i>
+                    </div>
+                    <input asp-for="GPA" type="text" class="form-control" id="gpaInput" />
+                    <span asp-validation-for="GPA" class="text-danger"></span>
+                </div>
+                <!-- Personal statement form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="PersonalStatement"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tell us why we should consider you for a TA position"></i>
+                    </div>
+                    <!--found from W3Schools-->
+                    <textarea asp-for="PersonalStatement" class="form-control" id="statementInput" rows="4" cols="50" ></textarea>
+                    <span asp-validation-for="PersonalStatement" class="text-danger"></span>
+                </div>
+                <!-- Prev University form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="TransferSchool"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Have you attended any institution prior to the University of Utah?"></i>
+                    </div>
+                    <input asp-for="TransferSchool" type="text" class="form-control" id="transferSchoolInput" />
+                    <span asp-validation-for="TransferSchool" class="text-danger"></span>
+                </div>
+                <!-- LinkedIn form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        <label asp-for="LinkedInURL"></label>
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Add your LinkedIn profile if available"></i>
+                    </div>
+                    <input asp-for="LinkedInURL" type="text" class="form-control" id="linkedInInput" />
+                    <span asp-validation-for="LinkedInURL" class="text-danger"></span>
+                </div>
+                <!-- Create Button -->
+                <div class="form-group mx-1">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <!--Shows on right when screen md and above-->
+        <div class="d-none d-md-block col-md-4 col-lg-6"><img class="img-fluid" src="~/images/apply.jpg" alt="TA Picture" /></div>
+    </div>
+</div>

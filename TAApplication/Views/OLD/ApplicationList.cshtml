@@ -1,0 +1,131 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 30-Aug-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This HTML page is designed for U of U faculty. It displays information regarding all TA applications in a table. Other general
+    information about TA employment is shown.*@
+
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+@{
+    ViewData["Description"] = "List of TA applications recieved";
+}
+
+<h1 id="pageTitle"> Applicants </h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <!-- General Employment Numbers -->
+            <ul class="list-group">
+                <li class="list-group-item">Applications Received: 2</li>
+                <li class="list-group-item">Applications Accepted: 1</li>
+            </ul>
+        </div>
+        <div class="col">
+            <!-- Classes needing TA dropdown -->
+            <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    Classes in need of TAs:
+                </button>
+                <ul class="dropdown-menu">
+                    <li><span class="dropdown-item-text">CS 4540</span></li>
+                    <li><span class="dropdown-item-text">CS 4400</span></li>
+                    <li><span class="dropdown-item-text">CS 3100</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image above table -->
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col">
+            <div><img class="img-fluid" src="~/images/application.jpg" alt="application form" /></div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col">
+            <!-- Applicants Table -->
+            <table id="applicantTable">
+                <thead>
+                    <tr>
+                        <th>Names</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th>Prior Evals?</th>
+                        <th>Employed In</th>
+                        <th>Pursued Degree</th>
+                        <th>Dept.</th>
+                        <th>GPA</th>
+                        <th>Last Modified</th>
+                        <th>Desired Hours</th>
+                        <th>Previously Employed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!-- Referenced from www.w3schools.com/asp/razor_syntax.asp -->
+                        <!-- Only Admin can see hyperlinks in names in ApplicationDetails -->
+                        @{
+                            if (User.IsInRole("Admin")) 
+                            {
+                                <td><a asp-area="" asp-controller="Home" asp-action="ApplicationDetails">Amy</a></td>
+                            }
+                            else 
+                            {
+                                <td>Amy</td>
+                            }
+                        }
+                        <td>Accepted</td>
+                        <td>N/A</td>
+                        <td>Good</td>
+                        <td>CS 4540</td>
+                        <td>BS</td>
+                        <td>CS</td>
+                        <td>4.0</td>
+                        <td>4-Aug-2022</td>
+                        <td>10</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <!-- Referenced from www.w3schools.com/asp/razor_syntax.asp -->
+                        <!-- Only Admin can see hyperlinks in names in ApplicationDetails -->
+                        @{
+                            if (User.IsInRole("Admin"))
+                            {
+                                <td><a asp-area="" asp-controller="Home" asp-action="ApplicationDetails">Brock</a></td>
+                            }
+                            else
+                            {
+                                <td>Brock</td>
+                            }
+                        }
+                        <td>Applied</td>
+                        <td>N/A</td>
+                        <td>Good</td>
+                        <td>CS 4540</td>
+                        <td>BS</td>
+                        <td>CS</td>
+                        <td>3.8</td>
+                        <td>2-Aug-2022</td>
+                        <td>20</td>
+                        <td>No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

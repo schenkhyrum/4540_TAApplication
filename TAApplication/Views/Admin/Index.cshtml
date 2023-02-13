@@ -1,0 +1,129 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 24-Sep-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    Role Manager page for admins to assign and modify user roles. Contains a data table displaying each
+    user and the roles assigned to them.*@
+
+@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@inject UserManager<TAUser> um
+@inject RoleManager<IdentityRole> rm
+
+@{
+    ViewData["Title"] = "Role Manager";
+}
+
+@{
+    ViewData["Description"] = "Admin Page for assigning roles to users";
+}
+
+@section Scripts{
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/admin/roles.js"></script>
+}
+
+    @section Styles{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+}
+
+    <h1 id="pageTitle"> Role Manager </h1>
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col">
+            <!-- Role Manager Table -->
+                <table id="roleManagerTable">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Unid</th>
+                        <th>Applicant</th>
+                        <th>Admin</th>
+                        <th>Professor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                    // help from link below to solve issue related to iterating over just um.Users
+                    // https://stackoverflow.com/questions/66690147/entity-framework-error-there-is-already-an-open-datareader-associated-with-this
+                    foreach (var user in um.Users.ToArray())
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(item => user.UserName)</td>
+                            <td>@Html.DisplayFor(item => user.Unid)</td>
+
+                            @*initialize a users Applicant checkbox based on if they have this role or not*@
+                            @{
+                                if (await um.IsInRoleAsync(user, "Applicant"))
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 1) checked="" onclick="addRemoveRole('Applicant', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 1) onclick="addRemoveRole('Applicant', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                            }
+
+                            @*initialize a users Admin checkbox based on if they have this role or not*@
+                            @{
+                                if (await um.IsInRoleAsync(user, "Admin"))
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 2) checked="" onclick="addRemoveRole('Admin', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 2) onclick="addRemoveRole('Admin', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                            }
+
+                            @*initialize a users Professor checkbox based on if they have this role or not*@
+                            @{
+                                if (await um.IsInRoleAsync(user, "Professor"))
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 3) checked="" onclick="addRemoveRole('Professor', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id=@(user.Id + 3) onclick="addRemoveRole('Professor', this.id)">
+                                        </div>
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,190 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 8-Sep-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This partial html defines the navbar found on each page. Has a home button, various links including a dropdown,
+    and collapses when screen size is below md.*@
+
+@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@using TAApplication.Data
+
+@inject UserManager<TAUser> um
+@inject RoleManager<IdentityRole> rm
+@inject SignInManager<TAUser> SignInManager
+@inject TAApplicationContext database
+
+@{
+    var user = await um.GetUserAsync(User);
+    var application = database.Applications.Where(app => app.TAUser == user).FirstOrDefault();
+    var u0000000Application = database.Applications.Where(app => app.TAUser.Unid == "u0000000").FirstOrDefault();
+    var firstCourse = database.Courses.FirstOrDefault();
+    var applicationId = application != null ? application.ID : 0;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="author" content="Isaac Kletzli & Hyrum Schenk" />
+    <meta name="description" content=@ViewData["Description"] />
+    <meta name="keywords" content="TA, Application, Applicant, School of Computing, Utah, University, Computer Sceince, Teaching, Assistant" />
+    <title>Teaching Assistant | @ViewData["Title"]</title> <!--looked at U of U school of computing page for inspiration-->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+    <!--Bootstrap dynamic view and stylesheet-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TAApplication.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+
+    @await RenderSectionAsync("Styles", required: false)
+
+</head>
+<body class=@ViewData["Body"]>
+    <header>
+        <!-- Layout referenced from W3Schools -->
+        <nav class="navbar navbar-expand-md mainNavBar">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img id="homeLink" src="~/images/home_icon.png" alt="Home Icon" /></a>
+                <!-- Home Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Left aligned portion of navbar -->
+                <div class="collapse navbar-collapse" id="mynavbar">
+                    <ul class="navbar-nav me-auto">
+                        @*Only admins can see Applicants Overview page*@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Applications" asp-action="Index">Applicants Overview</a>
+                            </li>
+                        }
+
+                        @*Only applicants with no application can see the Create page*@
+                        @if (User.IsInRole("Applicant") && database.Applications.Where(app => app.TAUser == user).Count() == 0)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Applications" asp-action="Create">Start Application</a>
+                            </li>
+                        }
+
+                        @*Only applicants with an application can see View Application page*@
+                        @if (User.IsInRole("Applicant") && database.Applications.Where(app => app.TAUser == user).Count() == 1)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Applications" asp-action="Details" asp-route-id="@application?.ID">View Application</a>
+                            </li>
+                        }
+
+                        @*Professors can see ApplicationList page and Course List page*@
+                        @if (User.IsInRole("Professor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Applications" asp-action="List">Applicant List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Courses" asp-action="List">Course List</a>
+                            </li>
+                        }
+
+                        @*Admins can see Admin index page and Course List page*@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Role Manager</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Courses" asp-action="List">Course List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="EnrollmentTrends">Enrollment Trends</a>
+                            </li>
+                        }
+
+                        @*Only Signed in users can see the privacy page*@
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        }
+
+                        <!-- Dropdown Section -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">TA Links</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item-text">Isaac Kletzli & Hyrum Schenk</li>
+
+                                <hr />
+                                <li class="dropdown-item-text">PS9</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="EnrollmentTrends">Enrollment Trends</a></li>
+
+                                <hr />
+                                <li class="dropdown-item-text">PS8</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Applications" asp-action="List">Applicant List</a></li>
+
+                                @*go to the user's availability page*@
+                                @if (User.IsInRole("Applicant"))
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Availability" asp-action="Index" asp-route-id="@applicationId">Availability</a></li>
+                                }
+
+                                @*go to the u0000000 availability page*@
+                                else
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Availability" asp-action="Index" asp-route-id="@u0000000Application?.ID">Availability</a></li>
+                                }   
+                                
+                                <hr />
+                                <li class="dropdown-item-text">PS6</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Courses" asp-action="List">Course List</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Courses" asp-action="Details" asp-route-id="@firstCourse?.ID">First Course Details</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Courses" asp-action="Edit" asp-route-id="@firstCourse?.ID">Edit First Course</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Courses" asp-action="Create">Create Course</a></li>
+
+                                <hr />
+                                <li class="dropdown-item-text">PS5</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Applications" asp-action="Index">Applicants Overview</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Applications" asp-action="List">Applicant List</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Applications" asp-action="Details" asp-route-id="@u0000000Application?.ID">View u0000000 Application</a></li>
+
+                                <hr />
+                                <li class="dropdown-item-text">Admin</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Index">Role Manager</a></li>
+
+                                <hr />
+                                <li class="dropdown-item-text">OLD</li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="OLD" asp-action="ApplicationList">Applicant List</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="OLD" asp-action="ApplicationCreate">Start Application</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="OLD" asp-action="ApplicationDetails">View Application</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

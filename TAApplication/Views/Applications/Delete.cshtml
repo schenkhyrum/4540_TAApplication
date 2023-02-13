@@ -1,0 +1,139 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 7-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains a view of an individual applicants' information regarding their TA application.*@
+
+@model TAApplication.Models.Application
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+@{
+    ViewData["Description"] = "Details regarding each individual applicant";
+}
+
+@{
+    string imagePath = "";
+    if (Model.ImageFilename != null)
+    {
+        imagePath = "/uploads/" + Model.ImageFilename;
+    }
+
+    string resumePath = "";
+    if (Model.ResumeFilename != null)
+    {
+        resumePath = "/uploads/" + Model.ResumeFilename;
+    }
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+
+<!--Found from carousel example on Bootstrap's website-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="container">
+                <div class="row">
+                    <!--Image of applicant and personal statement-->
+                    <div class="col-lg-4 mb-4">
+                        @if(Model.ImageFilename != null)
+                        {
+                            <div><img class="bd-placeholder-img rounded-circle" width="250" height="250" src="@imagePath" alt="TA Picture" /></div>
+                        }
+                        else
+                        {
+                            <div><img class="bd-placeholder-img rounded-circle" width="250" height="250" src="~/images/blank-profile-photo.jpeg" alt="TA Picture" /></div>
+                        }
+                        <h2 class="fw-normal mt-3">
+                            @Html.DisplayFor(model => model.TAUser.Name)
+                        </h2>
+                        <p>
+                            uID: @Html.DisplayFor(model => model.TAUser.Unid)
+                        </p>  
+                        <p>
+                            Available Week Before?: @Html.DisplayFor(model => model.AvailableWeekBefore)
+                        </p>
+                        <p>
+                            Personal Statement: @Html.DisplayFor(model => model.PersonalStatement)
+                        </p>
+                    </div>
+                    <!--Applicant Information-->
+                    <div class="col-lg-4 mb-4">
+                        <img src="~/images/text.svg" alt="Home Icon" width="250" height="250" />
+                        <h2 class="fw-normal mt-3">Information</h2>
+                        <p>
+                            Semesters Completed: @Html.DisplayFor(model => model.SemestersCompleted)
+                        </p>
+                        <p>
+                            Email: @Html.DisplayFor(model => model.TAUser.Email)
+                        </p>
+                        <p>
+                            Degree Pursuing: @Html.DisplayFor(model => model.DegreePursuing)
+                        </p>
+                        <p>
+                            Department: @Html.DisplayFor(model => model.Department)
+                        </p>
+                        <p>
+                            Hours Avaialble: @Html.DisplayFor(model => model.AvailableHours) hours/week
+                        </p>
+                    </div>
+                    <!--Applicant credentials-->
+                    <div class="col-lg-4 mb-4">
+                        <img src="~/images/graduation.svg" alt="Home Icon" width="250" height="250" />
+                        <h2 class="fw-normal mt-3">Credentials</h2>
+                        <p>
+                            Prev. College: @Html.DisplayFor(model => model.TransferSchool)
+                        </p>
+                        <p>
+                            LinkedIn: @Html.DisplayFor(model => model.LinkedInURL)
+                        </p>
+                        <p>
+                            U of U GPA: @Html.DisplayFor(model => model.GPA)
+                        </p> 
+                        @if(Model.ResumeFilename != null)
+                        {
+                            <p>
+                                <a href="@resumePath"> Resume </a>
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.ModificationDate)
+        </dt>
+        <dd class="col-md-10">
+            @Model.ModificationDate.ToLocalTime()
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.ModifiedBy)
+        </dt>
+        <dd class="col-md-10">
+            @Html.DisplayFor(model => model.ModifiedBy)
+        </dd>
+    </dl>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="ID" />
+    <input type="submit" value="Delete" class="btn btn-danger" /> |
+    <a asp-action="Details" asp-route-id="@Model.ID">Back to Application</a>
+</form>

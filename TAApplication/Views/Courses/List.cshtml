@@ -1,0 +1,181 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 22-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains the site information for the list of courses. Information is displayed in a datatable.
+    Admins and professors can view this page, but admins only have the ability to update course notes via AJAX.*@
+
+@model IEnumerable<TAApplication.Models.Course>
+
+@{
+    ViewData["Title"] = "List";
+}
+
+@section Scripts{
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/courseList.js"></script>
+}
+
+    @section Styles{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+}
+
+    <h1>List</h1>
+
+@*Only admins can see the create button*@
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Create New</a>
+    </p>
+}
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col">
+            <table id="courseTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SemesterOffered)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.YearOffered)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Title)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Department)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CourseNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Section)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ProfessorUnid)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ProfessorName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StartTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EndTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DaysOffered)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Location)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreditHours)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EnrollmentCount)
+                        </th>
+                        @*Only admins can see the note*@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th>
+                                @Html.DisplayNameFor(model => model.Note)
+                            </th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SemesterOffered)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.YearOffered)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CourseNumber)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Section)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProfessorUnid)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProfessorName)
+                            </td>
+                            <td>
+                                @item.StartTime.ToLocalTime().ToString("h:mm tt")
+                            </td>
+                            <td>
+                                @item.EndTime.ToLocalTime().ToString("h:mm tt")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DaysOffered)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Location)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreditHours)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EnrollmentCount)
+                            </td>
+                            @*Only admin can see note and edit, details, and delete links*@
+                            @if (User.IsInRole("Admin"))
+                            {
+                                // these html elements contain item.ID to uniquely identify row and 1,2, or 3 to uniquely identify the element
+                                <td>
+                                    <div id="@(item.ID.ToString() + 3)">
+                                        @Html.DisplayFor(modelItem => item.Note)
+                                    </div>
+                                    <input class="btn btn-primary" value="Edit Note" type="button" onclick="buttonClick(this.id)" id="@(item.ID.ToString() + 1)">
+                                    @*Save button hidden initially*@
+                                    <input class="btn btn-primary initiallyHidden" value="Save Note" type="button" onclick="buttonClick(this.id)" id="@(item.ID.ToString() + 2)">
+                                </td> 
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                                </td>
+                            }
+                            @*Professors can see the details link*@
+                            @if (User.IsInRole("Professor"))
+                            {
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

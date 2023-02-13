@@ -1,0 +1,286 @@
+﻿/*
+    Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 22-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    Handles registering a user and checks if fields have proper requirements met. OnPostAsync method called
+    once the user clicks register. This validates a user when they register via Google.
+*/
+
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+#nullable disable
+
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using TAApplication.Areas.Data;
+
+namespace TAApplication.Areas.Identity.Pages.Account
+{
+    [AllowAnonymous]
+    public class ExternalLoginModel : PageModel
+    {
+        private readonly SignInManager<TAUser> _signInManager;
+        private readonly UserManager<TAUser> _userManager;
+        private readonly IUserStore<TAUser> _userStore;
+        private readonly IUserEmailStore<TAUser> _emailStore;
+        private readonly IEmailSender _emailSender;
+        private readonly ILogger<ExternalLoginModel> _logger;
+
+        public ExternalLoginModel(
+            SignInManager<TAUser> signInManager,
+            UserManager<TAUser> userManager,
+            IUserStore<TAUser> userStore,
+            ILogger<ExternalLoginModel> logger,
+            IEmailSender emailSender)
+        {
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
+            _logger = logger;
+            _emailSender = emailSender;
+        }
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        [BindProperty]
+        public InputModel Input { get; set; }
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public string ProviderDisplayName { get; set; }
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public string ReturnUrl { get; set; }
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        [TempData]
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public class InputModel
+        {
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            ///     directly from your code. This API may change or be removed in future releases.
+            /// </summary>
+            [Required]
+            [EmailAddress]
+            [Display(Name = "Email")]
+            public string Email { get; set; }
+
+            /// <summary>
+            ///     Unid that makes sure it is required, and checks against the regex to ensure it is in the proper format
+            /// </summary>
+            [Required]
+            [RegularExpression("^u[0-9]{7}")]
+            [Display(Name = "Unid")]
+            public string Unid { get; set; }
+
+            /// <summary>
+            ///     Name is required for the form to be submitted
+            /// </summary>
+            [Required]
+            [Display(Name = "Name")]
+            public string Name { get; set; }
+
+            /// <summary>
+            ///     ReferredTo field not required for the form to be submitted
+            /// </summary>
+            [Display(Name = "ReferredTo")]
+            public string ReferredTo { get; set; }
+        }
+        
+        public IActionResult OnGet() => RedirectToPage("./Login");
+
+        public IActionResult OnPost(string provider, string returnUrl = null)
+        {
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            if (remoteError != null)
+            {
+                ErrorMessage = $"Error from external provider: {remoteError}";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ErrorMessage = "Error loading external login information.";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
+
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                return LocalRedirect(returnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                return RedirectToPage("./Lockout");
+            }
+            else
+            {
+                // If the user does not have an account, then ask the user to create an account.
+                ReturnUrl = returnUrl;
+                ProviderDisplayName = info.ProviderDisplayName;
+                // fill in email if the user has one associated with them
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                {
+                    Input = new InputModel
+                    {
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                    };
+                }
+                // fill in name if the user has one associated with them
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    if (Input == null)
+                    {
+                        Input = new InputModel
+                        {
+                            Name = info.Principal.FindFirstValue(ClaimTypes.Name)
+                        };
+                    }
+
+                    else
+                    {
+                        Input.Name = info.Principal.FindFirstValue(ClaimTypes.Name);
+                    }
+                }
+                return Page();
+            }
+        }
+
+        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            // Get the information about the user from the external login provider
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ErrorMessage = "Error loading external login information during confirmation.";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+            }
+
+            if (ModelState.IsValid)
+            {
+                var user = CreateUser();
+
+                //set Unid, Name, EmailConfirmed, and ReferredTo fields
+                user.Unid = Input.Unid;
+                user.Name = Input.Name;
+                user.RefferedTo = Input.ReferredTo;
+                user.EmailConfirmed = true;
+
+                //already user with the Unid so return back to the page
+                if (_userManager.Users.Any(x => x.Unid == user.Unid))
+                {
+                    return Page();
+                }
+                await _userManager.AddToRoleAsync(user, "Applicant"); // Default role = Applicant
+
+                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = userId, code = code },
+                            protocol: Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            ProviderDisplayName = info.ProviderDisplayName;
+            ReturnUrl = returnUrl;
+            return Page();
+        }
+
+        private TAUser CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<TAUser>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(TAUser)}'. " +
+                    $"Ensure that '{nameof(TAUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the external login page in /Areas/Identity/Pages/Account/ExternalLogin.cshtml");
+            }
+        }
+
+        private IUserEmailStore<TAUser> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<TAUser>)_userStore;
+        }
+    }
+}

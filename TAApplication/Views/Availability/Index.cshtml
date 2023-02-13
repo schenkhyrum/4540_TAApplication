@@ -1,0 +1,84 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 21-Nov-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file is for the availability page. It contains a paragraph and header, with the paragraph only showing
+    up for applicants. A canavas is also displayed to show the user's availability. There is also a save button only
+    visible to applicants to update their availability.*@
+
+@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@using TAApplication.Data
+@using TAApplication.Models
+
+@inject UserManager<TAUser> um
+@inject TAApplicationContext database
+
+@model TAUser
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@{
+    var id = database.Applications.Where(x => x.TAUser == Model).First().ID;
+    var user = await um.GetUserAsync(User);
+
+    var isApplicant = await um.IsInRoleAsync(user, "Applicant");
+}
+
+@section Scripts{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.2.0/browser/pixi.js"></script>
+    @*the canvas is only interactive if the user is an applicant*@
+    @if (isApplicant)
+    {
+        <script>
+            userId = @id;
+            interactive = true;
+        </script>
+    }
+
+    else
+    {
+        <script>
+            userId = @id;
+            interactive = false;
+        </script>
+    }
+    <script src="~/js/availability.js"></script>
+}
+
+    <h1 class="mx-2">Availability for @Model.UserName</h1>
+
+    @*only show paragraph to applicants*@
+    @if (isApplicant)
+    {
+        <p class="keepNewLine mx-2">
+            Please indicate all times that you will be available during the week. This information is used by the
+            hiring committee and professors to determine class coverage, lab coverage, office hour coverage, etc.
+            (Note: Any work necessary on the weekends will be up to you and your professor to negotiate.)
+
+            If your schedule changes, please come back and update this record.
+        </p>
+    }
+
+    <div class="mx-2" id="canvas_div"></div>
+
+    @*only show save button to applicants*@
+    @if (isApplicant)
+    {
+        <input class="btn btn-primary mx-2 fixedButton" value="Save" id="saveButton" type="button" onclick="availabilityTracker.saveChanges()">
+        <button class="btn btn-primary initiallyHidden mx-2" id="spinner" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+        </button>
+        <div class="text-danger d-inline-block my-1" id="saveWarning"></div>
+    }

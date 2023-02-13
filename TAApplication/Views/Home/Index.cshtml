@@ -1,0 +1,96 @@
+﻿
+@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 30-Aug-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file defines the contents for the main page for the TA Application Site. Top banner explaining the benefits of
+    being a TA, with 3 additional links below.*@
+
+@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@using TAApplication.Data
+
+@inject UserManager<TAUser> um
+@inject TAApplicationContext database
+
+@{
+    var user = await um.GetUserAsync(User);
+}
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+@{
+    ViewData["Description"] = "Homepage for TA application website";
+}
+
+@{
+    ViewData["Body"] = "bg-dark";
+}
+
+<!--Top banner adapted from album example from Bootstrap's website-->
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light mintCreamText">Why Become a TA?</h1>
+            <p class="lead mintCreamText">
+                Teaching can help you pay the bills! Teaching gives you
+                good experience, and helps you solidify your skills in your school work. Being a TA
+                also provides you with the oppurtunity to have reduced tution. Up to 100% of you education
+                can be payed for depending on the amount of time you spend working as a TA.
+            </p>
+            @if (!(User.IsInRole("Admin") || User.IsInRole("Professor")))
+            {
+                @if (!User.IsInRole("Applicant") || database.Applications.Where(app => app.TAUser == user).Count() == 0)
+                {
+                    <p>
+                        <a class="btn btn-light my-2" asp-area="" asp-controller="Applications" asp-action="Create">Apply</a>
+                    </p>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Also adapted from album example -->
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-12 col-lg">
+                <div class="h-100 card shadow-sm">
+                    <div><img class="bd-placeholder-img card-img-top" src="~/images/uni_students.jpg" alt="U of U Picture" /></div>
+
+                    <div class="card-body">
+                        <p class="card-text">Meet the great faculty here at the University of Utah, and find out why being a TA here is so special!</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Faculty</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Two columns adapted from Jumbotron example from Bootstrap's website-->
+            <div class="col-12 col-lg">
+                <div class="h-100 p-5 text-bg-dark rounded-3">
+                    <h2>TA of the Year</h2>
+                    <p>Jeff was our last TA of the Year! Find out why he made such a great TA by clicking the link below!</p>
+                    <button class="btn btn-outline-light" type="button">More Information</button>
+                </div>
+            </div>
+            <div class="col-12 col-lg">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h2>FAQ</h2>
+                    <p>Click the link below to see answers to questions you may have about the TA program.</p>
+                    <button class="btn btn-outline-secondary" type="button">FAQ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

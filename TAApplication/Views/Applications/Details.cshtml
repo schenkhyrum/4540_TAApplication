@@ -1,0 +1,189 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 8-Sep-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains a view of an individual applicants' information regarding their TA application.*@
+
+@model TAApplication.Models.Application
+@{
+    ViewData["Title"] = "Applicant Info";
+}
+
+@{
+    ViewData["Description"] = "Details regarding each individual applicant";
+}
+
+@{
+    string imagePath = "";
+    if (Model.ImageFilename != null)
+    {
+        imagePath = "/uploads/" + Model.ImageFilename;
+    }
+
+    string resumePath = "";
+    if (Model.ResumeFilename != null)
+    {
+        resumePath = "/uploads/" + Model.ResumeFilename;
+    }
+}
+
+<h1 id="pageTitle"> View Applicant </h1>
+
+<!--Found from carousel example on Bootstrap's website-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="container">
+                <div class="row">
+                    <!--Image of applicant and personal statement-->
+                    <div class="col-lg-4 mb-4">
+                        @if(Model.ImageFilename != null)
+                        {
+                            <div><img class="bd-placeholder-img rounded-circle" width="250" height="250" src="@imagePath" alt="TA Picture" /></div>
+                        }
+                        else
+                        {
+                            <div><img class="bd-placeholder-img rounded-circle" width="250" height="250" src="~/images/blank-profile-photo.jpeg" alt="TA Picture" /></div>
+                        }
+                        <h2 class="fw-normal mt-3">
+                            @Html.DisplayFor(model => model.TAUser.Name)
+                        </h2>
+                        <p>
+                            uID: @Html.DisplayFor(model => model.TAUser.Unid)
+                        </p>  
+                        <p>
+                            Available Week Before?: @Html.DisplayFor(model => model.AvailableWeekBefore)
+                        </p>
+                        <p>
+                            Personal Statement: @Html.DisplayFor(model => model.PersonalStatement)
+                        </p>
+                    </div>
+                    <!--Applicant Information-->
+                    <div class="col-lg-4 mb-4">
+                        <img src="~/images/text.svg" alt="Home Icon" width="250" height="250" />
+                        <h2 class="fw-normal mt-3">Information</h2>
+                        <p>
+                            Semesters Completed: @Html.DisplayFor(model => model.SemestersCompleted)
+                        </p>
+                        <p>
+                            Email: @Html.DisplayFor(model => model.TAUser.Email)
+                        </p>
+                        <p>
+                            Degree Pursuing: @Html.DisplayFor(model => model.DegreePursuing)
+                        </p>
+                        <p>
+                            Department: @Html.DisplayFor(model => model.Department)
+                        </p>
+                        <p>
+                            Hours Avaialble: @Html.DisplayFor(model => model.AvailableHours) hours/week
+                        </p>
+                    </div>
+                    <!--Applicant credentials-->
+                    <div class="col-lg-4 mb-4">
+                        <img src="~/images/graduation.svg" alt="Home Icon" width="250" height="250" />
+                        <h2 class="fw-normal mt-3">Credentials</h2>
+                        <p>
+                            Prev. College: @Html.DisplayFor(model => model.TransferSchool)
+                        </p>
+                        <p>
+                            LinkedIn: @Html.DisplayFor(model => model.LinkedInURL)
+                        </p>
+                        <p>
+                            U of U GPA: @Html.DisplayFor(model => model.GPA)
+                        </p> 
+                        @if(Model.ResumeFilename != null)
+                        {
+                            <p>
+                                <a href="@resumePath"> Resume </a>
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="container-fluid">
+    <div class="row">
+        @*Left column displaying modification information and edit/delete buttons*@
+        <div class="col-md-4">
+            <div>
+                <dl class="row">
+                    <dt class="col-12">
+                        @Html.DisplayNameFor(model => model.ModificationDate)
+                    </dt>
+                    <dd class="col-12">
+                        @Model.ModificationDate.ToLocalTime()
+                    </dd>
+                    <dt class="col-12">
+                        @Html.DisplayNameFor(model => model.ModifiedBy)
+                    </dt>
+                    <dd class="col-12">
+                        @Html.DisplayFor(model => model.ModifiedBy)
+                    </dd>
+                </dl>
+            </div>
+            <div>
+                @if (User.IsInRole("Applicant") || User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary m-3">
+                        Edit
+                    </a>  
+                    <a asp-action="Delete" asp-route-id="@Model?.ID" class="btn btn-danger m-3">
+                        Delete
+                    </a>
+                }
+            </div>
+        </div>
+        @*Middle column displaying resume upload information*@
+        <div class="col-md-4">
+            <p class="text-danger">@TempData["resumeErrorMessage"]</p>
+                @if(Model.ResumeFilename == null)
+                {
+                    if (User.IsInRole("Applicant"))
+                    {
+                        <form method="post"                                              
+                            enctype="multipart/form-data" 
+                            asp-controller="Applications" 
+                            asp-action="FileUpload">
+                            <input type="submit" value="Upload PDF Resume" />
+                            <br/>
+                            <input type="file" name="files" multiple />
+                            <input hidden name="category" value="resume" /> @* I’m double using the method *@
+                            <input hidden name="applicationID" value="@Model.ID" />
+                        </form>
+                    }
+                }
+        </div>
+        @*Right column displaying image upload information*@
+        <div class="col-md-4 mt-3 mt-md-0">
+            <p class="text-danger">@TempData["imageErrorMessage"]</p>
+                @if(Model.ImageFilename == null)
+                {
+                    if (User.IsInRole("Applicant"))
+                    {
+                        <form method="post"                                              
+                            enctype="multipart/form-data" 
+                            asp-controller="Applications" 
+                            asp-action="FileUpload">
+                            <input type="submit" value="Upload an Image of Yourself" />
+                            <br/>
+                            <input type="file" name="files" multiple />
+                            <input hidden name="category" value="image" /> @* I’m double using the method *@
+                            <input hidden name="applicationID" value="@Model.ID" />
+                        </form>
+                    }
+                }
+        </div>
+    </div>
+</div>

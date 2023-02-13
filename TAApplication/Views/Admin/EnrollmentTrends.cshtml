@@ -1,0 +1,98 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 2-Dec-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    Enrollment Trends page for an admin to see the enrollments over time for various courses. Inputs for start and end date,
+    course, chart type, and ability to change between light and dark mode.*@
+
+@using Microsoft.AspNetCore.Identity
+@using TAApplication.Areas.Data
+@inject UserManager<TAUser> um
+@inject RoleManager<IdentityRole> rm
+
+@model List<SelectListItem>
+
+@{
+    ViewData["Title"] = "Enrollment Trends";
+}
+
+@{
+    ViewData["Description"] = "Admin Page for viewing enrollment trends";
+}
+
+@{
+    var chartTypes = new List<SelectListItem>(){
+        new SelectListItem() { Value = "areaspline", Text = "Area Spline" },
+        new SelectListItem() { Value = "bar", Text = "Bar" },
+        new SelectListItem() { Value = "column", Text = "Column" },
+        new SelectListItem() { Value = "scatter", Text = "Scatter" },
+        new SelectListItem() { Value = "spline", Text = "Spline" }
+    };
+}
+
+@section Scripts{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highcharts.js"></script>
+    <script src="~/js/admin/enrollmentTrends.js"></script>
+}
+
+@section Styles{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+}
+
+    <h1 class="changeTextColor" id="pageTitle"> Enrollment Trends </h1>
+
+    <div class="container-fluid mt-5">
+        <div class="row">
+            @*Start Date Input*@
+            <div class="mx-2 col-12 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Start Date: </span>
+                    <input class="form-control" type="text" id="startDate">
+                </div>
+            </div>
+            @*End Date Input*@
+            <div class="mx-2 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">End Date: </span>
+                    <input class="form-control" type="text" id="endDate">
+                </div>
+            </div>
+            @*Course Select*@
+            <div class="mx-2 col-lg-2 mb-3">
+                <select id="courseSelect" class="form-select" asp-items="Model"></select>
+            </div>
+            @*Chart Type Select*@
+            <div class="mx-2 col-lg-2 mb-3">
+                <select id="chartTypeSelect" onchange="changeChartType()" class="form-select" asp-items="chartTypes"></select>
+            </div>
+            @*Light Mode Toggle*@
+            <div class="mx-2 my-2 col-lg-12">
+                <div class="form-check form-switch">
+                    <span class="changeTextColor">Change Lighting Mode </span>
+                    <input class="form-check-input d-inline-block" id="toggleLight" type="checkbox" onclick="changeLightMode()">
+                </div>
+            </div>
+            @*Get Data Button*@
+            <div class="my-2 col-lg-12">
+                <input class="btn btn-primary mx-2 fixedButton" value="Get Data" id="getDataButton" type="button" onclick="getEnrollmentData()">
+                <button class="btn btn-primary initiallyHidden mx-2" id="spinner" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @*High Charts*@
+    <figure class="highcharts-figure">
+        <div id="enrollmentTrends"></div>
+    </figure>

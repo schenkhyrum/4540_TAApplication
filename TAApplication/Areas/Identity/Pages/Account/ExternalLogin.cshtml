@@ -1,0 +1,67 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 22-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    Defines the external login page when a user registers via google. We added in fields for Unid, Name, and ReferredTo.
+    Unid is required and needs to be unique. Name is also required, but does not have to be unique. The form will
+    still submit if the ReferredTo field is left blank.*@
+
+@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2 id="external-login-title">Associate your Google account.</h2>
+<hr />
+
+<p id="external-login-description" class="text-info">
+    You've successfully authenticated with <strong>Google</strong>.
+    Please enter an email address for this site below and click the Register button to finish
+    logging in.
+</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*Email field*@
+            <div class="form-floating">
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" />
+                <label asp-for="Input.Email" class="form-label"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            @*Unid field*@
+            <div class="form-floating">
+                <input asp-for="Input.Unid" class="form-control" autocomplete="Unid" aria-required="true" />
+                <label asp-for="Input.Unid"></label>
+                <span asp-validation-for="Input.Unid" class="text-danger"></span>
+            </div>
+            @*Name field*@
+            <div class="form-floating">
+                <input asp-for="Input.Name" class="form-control" autocomplete="Name" aria-required="true" />
+                <label asp-for="Input.Name"></label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+            @*ReferredTo field*@
+            <div class="form-floating">
+                <input asp-for="Input.ReferredTo" class="form-control" autocomplete="ReferredTo" aria-required="true" />
+                <label asp-for="Input.ReferredTo"></label>
+                <span asp-validation-for="Input.ReferredTo" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

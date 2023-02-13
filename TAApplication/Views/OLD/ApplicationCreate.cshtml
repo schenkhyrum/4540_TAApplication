@@ -1,0 +1,208 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 8-Sep-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains the site information for students applying to become a TA for the University of Utah. The site contains a form requesting
+    various identification and academic information about the student, as well as qualifications.*@
+
+@{
+    ViewData["Title"] = "Create Application";
+}
+
+@{
+    ViewData["Description"] = "Create Prospective TA Application";
+}
+
+@section Scripts{
+    <!--found in bootstrap docs to make tooltips work-->
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+}
+
+<h1 id="pageTitle"> TA Application </h1>
+<div class="container-fluid">
+    <div class="row">
+        <!--Shows on top when screen below md-->
+        <div class="d-md-none px-0"><img class="img-fluid" src="~/images/apply.jpg" alt="TA Picture" /></div>
+        <div class="col-md-8 col-lg-6 px-0">
+            <form>
+                <!-- Name form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Name
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter your full name"></i>
+                    </div>
+                    <input type="text" class="form-control" id="nameInput" name="nameInput" placeholder="Name">
+                </div>
+                <!-- email form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Email
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter your school email"></i>
+                    </div>
+                    <input type="text" class="form-control" id="emailInput" name="emailInput" placeholder="u1234567@utah.edu">
+                </div>
+                <!-- Prefered pronouns form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Pronouns (Optional)
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter your preferred pronouns"></i>
+                    </div>
+                    <input type="text" class="form-control" id="pronounInput" name="pronounInput" placeholder="">
+                </div>
+                <!-- English fluency form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        English Language Fluency
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Select your level of fluency in the Enlish language"></i>
+                    </div>
+                    <select selected="false" class="form-control" name="fluencyInput" id="fluencyInput">
+                        <option value="" selected disabled hidden></option>
+                        <option value="native">Native Speaker</option>
+                        <option value="second">Second Language</option>
+                        <option value="none">Not Fluent</option>
+                    </select>
+                </div>
+                <!-- Degree form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Degree Being Pursued
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Select which degree you are currently pursuing"></i>
+                    </div>
+                    <select selected="false" class="form-control" name="degreeInput" id="degreeInput">
+                        <option value="associate" selected>Associate's</option>
+                        <option value="bachelors">Bachelors</option>
+                        <option value="masters">Masters</option>
+                        <option value="phd">P.H.D.</option>
+                    </select>
+                </div>
+                <!-- Semesters completed form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Semesters Completed
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the number of semesters you have completed"></i>
+                    </div>
+                    <input type="text" class="form-control" id="semesterInput" name="semesterInput" placeholder="">
+                </div>
+                <!-- Availability week before form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Available Week Before
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Will you be available the week prior to the start of classes?"></i>
+                    </div>
+                    <select selected="false" class="form-control" name="availabilityInput" id="availabilityInput">
+                        <option value="" selected disabled hidden></option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <!-- View academic record permission form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Permission to View Record
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Do you give administration permission to view your academic records?"></i>
+                    </div>
+                    <!--<label for="cars" class="form-label">Choose a car:</label>-->
+                    <select selected="false" class="form-control" name="permissionInput" id="permissionInput">
+                        <option value="" selected disabled hidden></option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <!-- Previous experience form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Previous Experience
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="List any prior tutoring/teaching experiences you have"></i>
+                    </div>
+                    <input type="text" class="form-control" id="experienceInput" name="experienceInput" placeholder="">
+                </div>
+                <!-- Max hours form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Maximum Hours
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="What is the maximum number of hours you can work per week"></i>
+                    </div>
+                    <input type="text" class="form-control" id="hoursInput" name="hoursInput" placeholder="10">
+                </div>
+                <!-- Address form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Local Address
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="What city are you currently located in?"></i>
+                    </div>
+                    <input type="text" class="form-control" id="addressInput" name="addressInput" placeholder="">
+                </div>
+                <!-- GPA form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        UofU GPA
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter your current cumulative GPA"></i>
+                    </div>
+                    <input type="text" class="form-control" id="gpaInput" name="gpaInput" placeholder="3.5">
+                </div>
+                <!-- Personal statement form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Personal Statement
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tell us why we should consider you for a TA position"></i>
+                    </div>
+                    <!--found from W3Schools-->
+                    <textarea class="form-control" id="statementInput" name="statementInput" rows="4" cols="50" placeholder="Let us know more about you!"></textarea>
+                </div>
+                <!-- Prev University form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Previous University
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Have you attended any institution prior to the University of Utah?"></i>
+                    </div>
+                    <div class="form-check my-2 mx-3">
+                        <input class="form-check-input" type="radio" name="prevUniveristyRadio" id="prevUniveristyYes">
+                        <label class="form-check-label" for="prevUniveristyYes">
+                            Yes
+                        </label>
+                    </div>
+                    <div class="form-check my-2 mx-3">
+                        <input class="form-check-input" type="radio" name="prevUniveristyRadio" id="prevUniveristyNo" checked>
+                        <label class="form-check-label" for="prevUniveristyNo">
+                            No
+                        </label>
+                    </div>
+                </div>
+                <!-- LinkedIn form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        LinkedIn URL (Optional)
+                        <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Add your LinkedIn profile if available"></i>
+                    </div>
+                    <input type="text" class="form-control" id="linkedInInput" name="linkedInInput" placeholder="">
+                </div>
+                <!-- Upload Resume form -->
+                <div class="input-group my-3 mx-1">
+                    <div class="input-group-text col-sm-6 col-12">
+                        Upload Resume
+                    </div>
+                    <div class="col-sm-6 col-12">
+                        <input class="my-1 mx-3 chooseFile" type="file" id="resumeInput" name="resumeInput">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <!--Shows on right when screen md and above-->
+        <div class="d-none d-md-block col-md-4 col-lg-6"><img class="img-fluid" src="~/images/apply.jpg" alt="TA Picture" /></div>
+    </div>
+</div>

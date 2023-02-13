@@ -1,0 +1,62 @@
+/*
+    Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 30-Aug-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    CSS file that will be used site-wide for TA homepage, Applicants view, etc. Navbar, Page Title and Home icon link
+    are defined as IDs here. Each page will have only one of these elements. Other defined classes include the boxed
+    paragraph, navbar link formatting.
+*/
+
+body
+{
+    background-color: whitesmoke;
+}
+
+.mainNavBar
+{
+    background-color: firebrick;
+}
+
+#homeLink
+{
+    float: left;
+    height: 30px;
+    width: 30px;
+}
+
+#pageTitle
+{
+    font-family: 'Yu Gothic UI';
+    margin-left: 10px;
+}
+
+/*used when hovering over navbar links*/
+.navbar-expand-md .navbar-nav .nav-link:hover 
+{
+    color: mintcream;
+}
+
+/*user role color not matching navbar links*/
+.navBarTextColor 
+{
+    color: gainsboro;
+}
+
+/*specific color for navbar links*/
+.navbar-expand-md .navbar-nav .nav-link 
+{
+    color: gainsboro;
+}
+
+.mintCreamText
+{
+    color: mintcream;
+}

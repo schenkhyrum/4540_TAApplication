@@ -1,0 +1,225 @@
+﻿@*  Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 22-Oct-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This html file contains the site information for admins when they create a course. The site contains a form requesting
+    various information about the course for the admin to enter.*@
+
+@model TAApplication.Models.Course
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+@{
+    ViewData["Description"] = "Page where admin can create a course";
+}
+
+@section Scripts{
+    <!--found in bootstrap docs to make tooltips work-->
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
+
+    <h1 id="pageTitle"> Create Course </h1>
+    <div class="container-fluid">
+        <div class="row">
+            <!--Shows on top when screen below md-->
+            <div class="d-md-none px-0"><img class="img-fluid" src="~/images/school_sign.jpg" alt="School Sign" /></div>
+            <div class="col-md-8 col-lg-6 px-0">
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <!-- Semester Offered form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="SemesterOffered"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Which semester is this course offered"></i>
+                        </div>
+                        <select asp-for="SemesterOffered" asp-items="@Html.GetEnumSelectList<SemesterOffered>()" class="form-control"></select>
+                        <span asp-validation-for="SemesterOffered" class="text-danger"></span>
+                    </div>
+                    <!-- Year Offered form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="YearOffered"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter which year this course is offered"></i>
+                        </div>
+                        <input asp-for="YearOffered" type="text" class="form-control" id="yearOfferedInput" />
+                        <span asp-validation-for="YearOffered" class="text-danger"></span>
+                    </div>
+                    <!-- Title form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Title"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the title of this course"></i>
+                        </div>
+                        <input asp-for="Title" type="text" class="form-control" id="titleInput" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <!-- Department form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Department"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the department of this course"></i>
+                        </div>
+                        <input asp-for="Department" type="text" class="form-control" id="departmentInput" />
+                        <span asp-validation-for="Department" class="text-danger"></span>
+                    </div>
+                    <!-- Course Number form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="CourseNumber"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the course number of this course"></i>
+                        </div>
+                        <input asp-for="CourseNumber" type="text" class="form-control" id="courseNumberInput" />
+                        <span asp-validation-for="CourseNumber" class="text-danger"></span>
+                    </div>
+                    <!-- Section form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Section"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the section of this course"></i>
+                        </div>
+                        <input asp-for="Section" type="text" class="form-control" id="sectionInput" />
+                        <span asp-validation-for="Section" class="text-danger"></span>
+                    </div>
+                    <!-- Description form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Description"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the description of this course"></i>
+                        </div>
+                        <input asp-for="Description" type="text" class="form-control" id="descriptionInput" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <!-- Professor Unid form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="ProfessorUnid"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the professor's Unid for this course"></i>
+                        </div>
+                        <input asp-for="ProfessorUnid" type="text" class="form-control" id="professorUnidInput" />
+                        <span asp-validation-for="ProfessorUnid" class="text-danger"></span>
+                    </div>
+                    <!-- Professor Name form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="ProfessorName"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the professor's name for this course"></i>
+                        </div>
+                        <input asp-for="ProfessorName" type="text" class="form-control" id="professorNameInput" />
+                        <span asp-validation-for="ProfessorName" class="text-danger"></span>
+                    </div>
+                    <!-- Start Time form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="StartTime"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the start time for this course"></i>
+                        </div>
+                        <input asp-for="StartTime" type="time" class="form-control" id="startTimeInput" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    <!-- End Time form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="EndTime"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the end time for this course"></i>
+                        </div>
+                        <input asp-for="EndTime" type="time" class="form-control" id="endTimeInput" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                    <!-- Days Offered form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="DaysOffered"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the days this course is offered"></i>
+                        </div>
+                        <!-- Checkbox if class on Monday -->
+                        <div class="form-check my-2 mx-1">
+                            <label class="form-check-label" for="modayInput"> Mon </label>
+                            <input type="checkbox" class="form-check-input" value="true" name="monday" />
+                        </div>
+                        <!-- Checkbox if class on Tuesday -->
+                        <div class="form-check my-2 mx-1">
+                            <label class="form-check-label" for="modayInput"> Tue </label>
+                            <input type="checkbox" class="form-check-input" value="true" name="tuesday" />
+                        </div>
+                        <!-- Checkbox if class on Wednesday -->
+                        <div class="form-check my-2 mx-1">
+                            <label class="form-check-label" for="modayInput"> Wed </label>
+                            <input type="checkbox" class="form-check-input" value="true" name="wednesday" />
+                        </div>
+                        <!-- Checkbox if class on Thursday -->
+                        <div class="form-check my-2 mx-1">
+                            <label class="form-check-label" for="modayInput"> Thu </label>
+                            <input type="checkbox" class="form-check-input" value="true" name="thursday" />
+                        </div>
+                        <!-- Checkbox if class on Friday -->
+                        <div class="form-check my-2 mx-1">
+                            <label class="form-check-label" for="modayInput"> Fri </label>
+                            <input type="checkbox" class="form-check-input" value="true" name="friday" />
+                        </div>
+                        <span asp-validation-for="DaysOffered" class="text-danger"></span>
+                    </div>
+                    <!-- Location form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Location"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the location where this course is offered"></i>
+                        </div>
+                        <input asp-for="Location" type="text" class="form-control" id="locationInput" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                    <!-- Credit Hours form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="CreditHours"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the credit hours offered by this course"></i>
+                        </div>
+                        <input asp-for="CreditHours" type="text" class="form-control" id="creditHoursInput" />
+                        <span asp-validation-for="CreditHours" class="text-danger"></span>
+                    </div>
+                    <!-- Enrollment Count form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="EnrollmentCount"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter the number of students enrolled in this course"></i>
+                        </div>
+                        <input asp-for="EnrollmentCount" type="text" class="form-control" id="enrollmentCountInput" />
+                        <span asp-validation-for="EnrollmentCount" class="text-danger"></span>
+                    </div>
+                    <!-- Note form -->
+                    <div class="input-group my-3 mx-1">
+                        <div class="input-group-text col-sm-6 col-12">
+                            <label asp-for="Note"></label>
+                            <i class="ms-auto bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Enter a note for this course"></i>
+                        </div>
+                        <input asp-for="Note" type="text" class="form-control" id="noteInput" />
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+            <div class="d-none d-md-block col-md-4 col-lg-6"><img class="img-fluid" src="~/images/school_sign.jpg" alt="School Sign" /></div>
+        </div>
+    </div>
+    <div>
+        <a asp-action="List">Back to List</a>
+    </div>

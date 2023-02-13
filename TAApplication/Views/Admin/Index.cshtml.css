@@ -1,0 +1,33 @@
+﻿/*
+    Author: Isaac Kletzli
+    Partner: Hyrum Schenk
+    Date: 30-Aug-2022
+    Course: CS 4540, University of Utah, School of Computing
+    Copyright:  CS 4540, Isaac Kletzli, and Hyrum Schenk - This work may not be copied for use in Academic Coursework.
+
+    We, Isaac Kletzli and Hyrum Schenk, certify that we wrote this code from scratch and did not copy it in part or whole from
+    another source. Any references used in the completion of the assignment are cited in our README file.
+
+    File Contents
+
+    This CSS file defines the specific formatting preferences just for the Applicants
+    page. The main aspect that is modified is the applicants table.
+*/
+
+
+#roleManagerTable 
+{
+    border: 2px solid;
+    border-collapse: collapse;
+}
+
+#roleManagerTable th 
+{
+    border: 1px solid;
+    background-color: lightgray;
+}
+
+#roleManagerTable td 
+{
+    border: 1px solid;
+}
